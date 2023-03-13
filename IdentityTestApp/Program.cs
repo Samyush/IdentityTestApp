@@ -2,7 +2,9 @@ using System.Configuration;
 using System.Text;
 using IdentityTestApp.EntitiesAndModels;
 using IdentityTestApp.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -66,6 +68,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 #endregion
 
+// Add the authorization service ==> not working
+/*builder.Services.AddAuthorization(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});*/
+
+//add cookie authentication time span
+builder.Services.Configure<CookieAuthenticationOptions>(options =>
+{
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -82,10 +98,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-/*app.UseMvc(options =>
-{
-    options.Filters.Add(new AuthorizeFilter());
-});*/
 
 app.Run();

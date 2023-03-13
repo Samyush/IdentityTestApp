@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace IdentityTestApp.Entities
+namespace IdentityTestApp.EntitiesAndModels
 {
     public sealed class AppDbContext : IdentityDbContext
     {
@@ -10,8 +10,8 @@ namespace IdentityTestApp.Entities
             Database.EnsureCreated();
         }
         
-        DbSet<AppUsers> AppUsers { get; set; }
+        public DbSet<AppUsers> AppUsers { get; set; }
 
-        DbSet<TestDb> TestDbs { get; set; }
+        public DbSet<TestDb> TestDbs { get; set; }
     }
 }

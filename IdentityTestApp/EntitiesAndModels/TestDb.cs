@@ -1,4 +1,4 @@
-﻿namespace IdentityTestApp.Entities;
+﻿namespace IdentityTestApp.EntitiesAndModels;
 
 public class TestDb
 {

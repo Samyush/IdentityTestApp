@@ -1,9 +1,10 @@
 using System.Configuration;
 using System.Text;
-using IdentityTestApp.Entities;
+using IdentityTestApp.EntitiesAndModels;
 using IdentityTestApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -43,9 +44,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 #region JWTconfiguration
 
 //jwt configuration
-//var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var jwtSettings = builder.Configuration.GetSection("JWT");
 
-//var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]);
+var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -58,7 +59,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = "your_issuer",
             ValidAudience = "your_audience",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key"))
+            //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key"))
+            IssuerSigningKey = new SymmetricSecurityKey(key)
         };
     });
 
@@ -80,5 +82,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+/*app.UseMvc(options =>
+{
+    options.Filters.Add(new AuthorizeFilter());
+});*/
 
 app.Run();

@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using IdentityTestApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,15 +25,37 @@ namespace IdentityTestApp.Controllers
 
         //private readonly IMessageService _messageService;
         private readonly IConfiguration _configuration;
+        
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration)
+            IConfiguration configuration, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _roleManager = roleManager;
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpPost("create_role")]
+        public async Task<IActionResult> CreateRole(string userRole)
+        {
+            var role = new IdentityRole { Name = userRole };
+            var result = await _roleManager.CreateAsync(role);
+
+            if (result.Succeeded)
+            {
+                // role created successfully
+                return Ok();
+            }
+            else
+            {
+                // role creation failed
+                return BadRequest(result.Errors);
+            }
+        }
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto model)
         {
@@ -48,6 +71,35 @@ namespace IdentityTestApp.Controllers
 
             return Ok(new {message = "Registration successful"});
         }
+
+        #region register_admin
+
+        [HttpPost("register_admin")]
+        public async Task<IActionResult> RegisterAdmin(RegisterDto model)
+        {
+            var user = new IdentityUser {UserName = model.Username, Email = model.Email};
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                // Assign the user to the "Administrator" role
+                await _userManager.AddToRoleAsync(user, "Admin");
+
+                // ...
+            }
+            else if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            var token = GenerateJwtToken(user);
+
+            return Ok(new {token});
+        }
+        
+        #endregion
 
         [Route("login")]
         [HttpPost]

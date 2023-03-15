@@ -29,6 +29,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+
 //the following code is for customizing the password requirements
 
 /*builder.Services.Configure<IdentityOptions>(options =>
@@ -59,8 +61,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "your_issuer",
-            ValidAudience = "your_audience",
+            ValidIssuer = builder.Configuration["Jwt:ValidIssuer"],
+            ValidAudience = builder.Configuration["Jwt:ValidAudience"],
             //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key"))
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
@@ -69,12 +71,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 #endregion
 
 // Add the authorization service ==> not working
-/*builder.Services.AddAuthorization(options =>
+builder.Services.AddAuthorization(options =>
 {
-    options.DefaultPolicy = new AuthorizationPolicyBuilder()
+    options.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
         .RequireAuthenticatedUser()
-        .Build();
-});*/
+        .Build());
+});
 
 //add cookie authentication time span
 builder.Services.Configure<CookieAuthenticationOptions>(options =>

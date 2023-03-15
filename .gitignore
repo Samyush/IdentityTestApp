@@ -1,4 +1,5 @@
-IdentityTestApp\Migrations\
-.vs
-obj\
-bin\
+﻿IdentityTestApp/Migrations
+.vs/
+IdentityTestApp/obj
+IdentityTestApp/bin
+

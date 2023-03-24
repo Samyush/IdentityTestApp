@@ -14,20 +14,23 @@ namespace IdentityTestApp.Controllers
     public class MongoDbController : ControllerBase
     {
         private IConfiguration _configuration;
-        private IMongoDatabase _database;
+        private IMongoClient _client;
         
-        public MongoDbController(IConfiguration configuration, IMongoDatabase database)
+        public MongoDbController(IConfiguration configuration, IMongoClient client)
         {
             _configuration = configuration;
-            _database = database;
+            _client = client;
         }
 
         [HttpGet("dbtest")]
         public IActionResult DbTest()
         {
             
-            var data = _database.GetCollection<BsonDocument>("movies");
-
+            var database = _client.GetDatabase(_configuration.GetConnectionString("DatabaseName"));
+            var collection = database.GetCollection<BsonDocument>(_configuration.GetConnectionString("CollectionName"));
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", "10006546");
+            var data = collection.Find(filter).ToList();
+            
             return Ok(data);
 
             /*var connectionString = _configuration.GetConnectionString("MongoDb");

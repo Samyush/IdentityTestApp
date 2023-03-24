@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 
@@ -20,20 +21,22 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 var client = new MongoClient(builder.Configuration.GetConnectionString("MongoDb"));
-var database = client.GetDatabase("GamesDB");
-builder.Services.AddSingleton<IMongoDatabase>(database);
+//builder.Services.Configure()
+
+//var database = client.GetDatabase("GamesDB");
+builder.Services.AddSingleton<IMongoClient>(options =>
+    client);
 
 #region IdentityConfiguration
 
 //builder.Services.AddTransient<IMessageService, FileMessageService>();
 
+/*
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+    */
 
 
 //the following code is for customizing the password requirements

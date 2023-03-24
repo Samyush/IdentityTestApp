@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol.Plugins;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace IdentityTestApp.Controllers
@@ -23,18 +24,21 @@ namespace IdentityTestApp.Controllers
 
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        //private readonly IMessageService _messageService;
+        private readonly IMessageService _messageService;
+        
         private readonly IConfiguration _configuration;
         
         private readonly RoleManager<IdentityRole> _roleManager;
 
         public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration, RoleManager<IdentityRole> roleManager)
+            IConfiguration configuration, RoleManager<IdentityRole> roleManager,
+            IMessageService messageService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _roleManager = roleManager;
+            _messageService = messageService;
         }
 
         [Authorize(Roles = "Admin")]
@@ -163,6 +167,64 @@ namespace IdentityTestApp.Controllers
         }
 
         #endregion
+
+        
+        /*
+        /// trying to implement email service
+         
+        #region ValidateEmail
+
+        [HttpPost("validate_email")]
+        [Authorize]
+        public async Task<IActionResult> ValidateEmail()
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser != null && !currentUser.EmailConfirmed)
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(currentUser);
+                var confirmationLink = Url.Action("ConfirmEmail", "Auth",
+                    new {token, email = currentUser.Email}, Request.Scheme);
+               // var message = new Message(new string[] {currentUser.Email}, "Confirm your email",
+                 //   confirmationLink, null);
+                //await _messageService.SendEmailAsync(message);
+                
+                return Ok("see email for confirmation link");
+            }
+
+            return BadRequest();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            // Other code...
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException($"Error confirming email for user with ID '{userId}':");
+            }
+
+            // Set EmailConfirmed to true and save changes
+            user.EmailConfirmed = true;
+            await _userManager.UpdateAsync(user);
+
+            // Other code...
+            return null;
+        }
+
+
+        #endregion
+        */
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()

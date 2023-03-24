@@ -24,7 +24,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 #region IdentityConfiguration
 
-//builder.Services.AddTransient<IMessageService, FileMessageService>();
+builder.Services.AddTransient<IMessageService>();
+
+//builder.Services.AddTransient<IMyEmailSender>();
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()

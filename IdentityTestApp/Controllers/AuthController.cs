@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NuGet.Protocol.Plugins;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace IdentityTestApp.Controllers
 {
@@ -20,11 +21,13 @@ namespace IdentityTestApp.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager; 
 
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        private readonly IMessageService _messageService;
+        //private readonly IMessageService _messageService;
+        
+        private readonly IEmailSender _emailSender;
         
         private readonly IConfiguration _configuration;
         
@@ -32,13 +35,15 @@ namespace IdentityTestApp.Controllers
 
         public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
             IConfiguration configuration, RoleManager<IdentityRole> roleManager,
-            IMessageService messageService)
+            //IMessageService messageService,
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _roleManager = roleManager;
-            _messageService = messageService;
+            //_messageService = messageService;
+            _emailSender = emailSender;
         }
 
         [Authorize(Roles = "Admin")]
@@ -169,8 +174,8 @@ namespace IdentityTestApp.Controllers
         #endregion
 
         
-        /*
-        /// trying to implement email service
+        
+        // implementation of email service
          
         #region ValidateEmail
 
@@ -186,9 +191,11 @@ namespace IdentityTestApp.Controllers
                     new {token, email = currentUser.Email}, Request.Scheme);
                // var message = new Message(new string[] {currentUser.Email}, "Confirm your email",
                  //   confirmationLink, null);
+                await _emailSender.SendEmailAsync(currentUser.Email, "Confirm your email", confirmationLink);
+                 //_userManager.ConfirmEmailAsync(confirmationLink, token);
                 //await _messageService.SendEmailAsync(message);
                 
-                return Ok("see email for confirmation link");
+                return Ok($"see email for confirmation link (mail sent to {currentUser.Email})");
             }
 
             return BadRequest();
@@ -196,22 +203,22 @@ namespace IdentityTestApp.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmEmail(string email, string token)
         {
             // Other code...
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByEmailAsync(email);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            var result = await _userManager.ConfirmEmailAsync(user, code);
+            var result = await _userManager.ConfirmEmailAsync(user, token);
 
             if (!result.Succeeded)
             {
-                throw new InvalidOperationException($"Error confirming email for user with ID '{userId}':");
+                throw new InvalidOperationException($"Error confirming email for user with ID '{email}':");
             }
 
             // Set EmailConfirmed to true and save changes
@@ -219,12 +226,12 @@ namespace IdentityTestApp.Controllers
             await _userManager.UpdateAsync(user);
 
             // Other code...
-            return null;
+            return Ok($"Email confirmed successfully Threat has been detected, please hide your email address password from github /n {user.Email}");
         }
 
 
         #endregion
-        */
+        
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()

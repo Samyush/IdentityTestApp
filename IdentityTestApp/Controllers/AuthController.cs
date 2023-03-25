@@ -175,7 +175,7 @@ namespace IdentityTestApp.Controllers
 
         
         
-        // trying to implement email service
+        // implementation of email service
          
         #region ValidateEmail
 

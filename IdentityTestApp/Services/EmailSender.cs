@@ -13,8 +13,8 @@ public class EmailSender : IEmailSender
 
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
-        string fromMail = "anuj.pradhan.ix@gmail.com";
-        string fromPassword = "xefyqvgnvzuroypo";
+        string fromMail = "email@gmail.com";
+        string fromPassword = "password";
 
         MailMessage message = new MailMessage();
 

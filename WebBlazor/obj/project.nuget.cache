@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "SMKz3EyZnR9K4xjpAb6FELChMy1IhDS05/9FTGvVRqPrJ0+PDb1+HdUgYTAFZsF0uuw5JSm9DR+RUrA9Ap7bUg==",
+  "success": true,
+  "projectFilePath": "/Users/samyush/Development/Asp.netCore/IdentityTestApp/WebBlazor/WebBlazor.csproj",
+  "expectedPackageFiles": [
+    "/Users/samyush/.nuget/packages/microsoft.netcore.app.ref/6.0.15/microsoft.netcore.app.ref.6.0.15.nupkg.sha512",
+    "/Users/samyush/.nuget/packages/microsoft.aspnetcore.app.ref/6.0.15/microsoft.aspnetcore.app.ref.6.0.15.nupkg.sha512",
+    "/Users/samyush/.nuget/packages/microsoft.netcore.app.host.osx-x64/6.0.15/microsoft.netcore.app.host.osx-x64.6.0.15.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -46,7 +46,7 @@ namespace IdentityTestApp.Controllers
             _emailSender = emailSender;
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPost("create_role")]
         public async Task<IActionResult> CreateRole(string userRole)
         {
